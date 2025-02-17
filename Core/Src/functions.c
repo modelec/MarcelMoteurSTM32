@@ -27,7 +27,7 @@ void ralentir(){
 
 
 
-void maine(){
+void Cppmain(){
 	GPIOC->ODR ^= (1<<10);
 	TIM3->CCR4 = 0;
 

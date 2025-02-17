@@ -9,7 +9,7 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
-void maine();
+void Cppmain();
 
 void accelerer();
 void ralentir();

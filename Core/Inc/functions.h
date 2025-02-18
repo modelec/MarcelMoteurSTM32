@@ -13,5 +13,7 @@ void Cppmain();
 
 void accelerer();
 void ralentir();
+void setspeed(uint32_t speed);
+void testChannels();
 
 #endif /* FUNCTIONS_H_ */

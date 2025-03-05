@@ -1,54 +1,66 @@
 #include <motors.h>
 
 Motor::Motor(TIM_TypeDef *timer) :
-		tim(timer) {
+		tim(timer), currentSpeed(0), targetSpeed(0), isAccelerating(false), isReversing(
+				false) {
 }
 
 void Motor::accelerer(int speed) {
-	tim->CCR1 = 0;
-	tim->CCR2 = 0;
-	uint16_t limit = (speed <= 626) ? speed : 626;
-	for (uint16_t i = 0; i < limit; i++) {
-		tim->CCR4 = i;
-		tim->CCR3 = i;
-		HAL_Delay(5);
-	}
+	targetSpeed = (speed <= 626) ? speed : 626;
+	isAccelerating = true;
+	isReversing = false;
 }
 
 void Motor::reculer(int speed) {
-	tim->CCR3 = 0;
-	tim->CCR4 = 0;
-	uint16_t limit = (speed <= 626) ? speed : 626;
-	for (uint16_t i = 0; i < limit; i++) {
-		tim->CCR1 = i;
-		tim->CCR2 = i;
-		HAL_Delay(5);
-	}
+	targetSpeed = (speed <= 626) ? speed : 626;
+	isReversing = true;
+	isAccelerating = false;
 }
 
 void Motor::ralentir() {
-	tim->CCR1 = 0;
-	tim->CCR2 = 0;
-	for (uint16_t i = 626; i > 0; i--) {
-		tim->CCR4 = i;
-		tim->CCR3 = i;
-		HAL_Delay(1);
-	}
+	targetSpeed = 0;
+	isAccelerating = true;
+	isReversing = false;
 }
 
 void Motor::ralentirEnvers() {
-	tim->CCR3 = 0;
-	tim->CCR4 = 0;
-	for (uint16_t i = 626; i > 0; i--) {
-		tim->CCR1 = i;
-		tim->CCR2 = i;
-		HAL_Delay(1);
-	}
+	targetSpeed = 0;
+	isReversing = true;
+	isAccelerating = false;
 }
 
 void Motor::stop() {
-	TIM3->CCR1 = 0;
-	TIM3->CCR2 = 0;
-	TIM3->CCR4 = 0;
-	TIM3->CCR3 = 0;
+	tim->CCR1 = 0;
+	tim->CCR2 = 0;
+	tim->CCR3 = 0;
+	tim->CCR4 = 0;
+	currentSpeed = 0;
+	targetSpeed = 0;
+	isAccelerating = false;
+	isReversing = false;
+}
+
+void Motor::update() {
+	// Gestion de l'accélération/décélération
+	if (isAccelerating && currentSpeed < targetSpeed) {
+		currentSpeed++;
+	} else if (isReversing && currentSpeed > -targetSpeed) {
+		currentSpeed--;
+	} else if (!isAccelerating && !isReversing && currentSpeed > targetSpeed) {
+		currentSpeed--;
+	}
+
+	// Mise à jour des registres du timer
+	if (isAccelerating) {
+		tim->CCR4 = currentSpeed;
+		tim->CCR3 = currentSpeed;
+	} else if (isReversing) {
+		tim->CCR1 = currentSpeed;
+		tim->CCR2 = currentSpeed;
+	}
+	// Arrêt si vitesse cible atteinte
+	if (currentSpeed == targetSpeed) {
+		isAccelerating = false;
+		isReversing = false;
+	}
 }

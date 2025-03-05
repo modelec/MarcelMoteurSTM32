@@ -19,6 +19,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "functions.h"
+#include <cstdlib>  // Pour rand() et srand()
+#include <ctime>    // Pour time()
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -98,6 +100,9 @@ int main(void)
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+
+    srand(HAL_GetTick());
+
   /* USER CODE END 2 */
 
   /* Infinite loop */

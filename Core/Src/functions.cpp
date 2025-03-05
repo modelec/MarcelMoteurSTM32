@@ -1,10 +1,3 @@
-/*
- * functions.c
- *
- *  Created on: Feb 17, 2025
- *      Author: CHAUVEAU Maxime
- */
-
 #ifndef SRC_FUNCTIONS_C_
 #define SRC_FUNCTIONS_C_
 
@@ -12,6 +5,17 @@
 #include "motors.h"
 
 
+uint32_t lastTick = 0; // Variable pour mémoriser l'heure de la dernière action
+uint32_t delayTime = 0; // Variable pour définir le délai de la prochaine action
+
+// Fonction pour vérifier si le délai est passé (permet de ne pas bloquer l'exécution
+bool isDelayPassed(uint32_t delay) {
+    if (HAL_GetTick() - lastTick >= delay) {
+        lastTick = HAL_GetTick();  // Met à jour lastTick
+        return true;
+    }
+    return false;
+}
 
 
 void Cppmain(){
@@ -19,15 +23,14 @@ void Cppmain(){
 
 	Motor motor(TIM3);
 	motor.accelerer(626);
-	HAL_Delay(1000);
+	//On utilise pour les tests un blocage
+	while(!isDelayPassed(2000)) {
+
+	}
 	motor.ralentir();
-	HAL_Delay(1000);
+	while(!isDelayPassed(500)) {
 
-	motor.reculer(626);
-	HAL_Delay(1000);
-	motor.ralentirEnvers();
-	HAL_Delay(1000);
-
+	}
 	//testChannels();
 
 	//GPIOC->ODR ^= (1<<10);

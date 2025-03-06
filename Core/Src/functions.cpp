@@ -1,8 +1,6 @@
 #ifndef SRC_FUNCTIONS_C_
 #define SRC_FUNCTIONS_C_
 
-#include <cstdlib>  // Pour rand()
-#include <ctime>    // Pour time()
 #include "functions.h"
 #include "motors.h"
 
@@ -20,38 +18,16 @@ bool isDelayPassed(uint32_t delay) {
 }
 
 
-void Cppmain(){
+void Cpploop(Motor *motor){
 
 	GPIOC->ODR ^= (1<<10);
 
-	//Simulation de détection d'obstacle
-    static bool obstacleDetecte = false;
-    static uint32_t tempsDebutObstacle = 0;
 
-	Motor motor(TIM3);
-
-	motor.accelerer(626);
-
-	//On actualise toute les 10ms
+	//On actualise toute les 10ms et on effectue tous les controles périodiques
 	if(isDelayPassed(10)) {
-	    // Simulation aléatoire de détection d'obstacle
-	    if (!obstacleDetecte && (rand() % 100 < 5)) { // 5% de chance de détecter un obstacle
-	        obstacleDetecte = true;
-	        tempsDebutObstacle = HAL_GetTick(); // Récupération du temps actuel
-	        //On arrête les moteurs
-	        motor.stop();
-	    }
-	    // Vérifier si la détection dure depuis 3 secondes
-	    if (obstacleDetecte) {
-	        if (HAL_GetTick() - tempsDebutObstacle >= 3000) {
-	        	//Au bout de 3 secondes, on imagine que l'obstacle est parti pour les tests
-	        	//On redémarre les moteurs
-	            obstacleDetecte = false;
-	            motor.accelerer(626);
-	        }
-	    }
+
 		//On met à jour le statut des moteurs
-		motor.update();
+		motor->update();
 	}
 
 

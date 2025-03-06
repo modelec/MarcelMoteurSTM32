@@ -5,11 +5,12 @@
  *      Author: CHAUVEAU Maxime
  */
 #include "main.h"
+#include "motors.h"
 
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
-void Cppmain();
+void Cpploop(Motor *motor);
 
 
 #endif /* FUNCTIONS_H_ */

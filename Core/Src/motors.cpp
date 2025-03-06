@@ -30,10 +30,6 @@ void Motor::ralentirEnvers() {
 }
 
 void Motor::stop() {
-	tim->CCR1 = 0;
-	tim->CCR2 = 0;
-	tim->CCR3 = 0;
-	tim->CCR4 = 0;
 	currentSpeed = 0;
 	targetSpeed = 0;
 	isAccelerating = false;
@@ -52,12 +48,17 @@ void Motor::update() {
 
 	// Mise à jour des registres du timer
 	if (isAccelerating) {
-		tim->CCR4 = currentSpeed;
-		tim->CCR3 = currentSpeed;
+		//2 et 3 avance
+	    tim->CCR2 = currentSpeed;
+	    tim->CCR3 = currentSpeed;
+
 	} else if (isReversing) {
+		// 1 et 4 recule
 		tim->CCR1 = currentSpeed;
-		tim->CCR2 = currentSpeed;
+		tim->CCR4 = currentSpeed;
+
 	}
+
 	// Arrêt si vitesse cible atteinte
 	if (currentSpeed == targetSpeed) {
 		isAccelerating = false;

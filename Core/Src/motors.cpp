@@ -65,3 +65,27 @@ void Motor::update() {
 		isReversing = false;
 	}
 }
+
+float Motor::distance() {
+    uint32_t count = LPTIM1->CNT;  // Nombre de ticks : LPTIM1->CNT doit renvoyer le nombre de tick
+    float perimetre = M_PI * 60.0f;  // 60 mm : taille des roues
+    float distParTick = perimetre / 600.0f;  // 600 : résolution en ticks/tour
+
+    float distance = count * distParTick;
+    return distance;
+}
+
+void Motor::avancerDe(float distance, int speed) {
+    float d_ini = distance();
+
+    if (distance > 0) {
+        accelerer(speed);
+
+        while (distance() - d_ini < distance) {
+            // avance tant que la distance n'est pas atteinte
+        }
+
+        ralentir();
+    }
+}
+

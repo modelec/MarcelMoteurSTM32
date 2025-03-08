@@ -2,6 +2,7 @@
 #define INC_MOTORS_H_
 
 #include "stm32l0xx_hal.h"
+#include <math.h>
 
 class Motor {
 private:
@@ -19,6 +20,8 @@ public:
     void ralentirEnvers();
     void stop();
     void update();
+    float distance();
+    void avancerDe(float distance, int speed);
 };
 
 

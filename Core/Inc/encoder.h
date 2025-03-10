@@ -32,11 +32,13 @@ private:
     uint32_t inputAgpioIDRMask;
     volatile uint32_t* inputBgpioIDRaddr;
     uint32_t inputBgpioIDRMask;
+    EncoderInputState previousAstate;
+    EncoderInputState previousBstate;
     void (*handler)(uint16_t totalDistance, uint16_t newDistance, bool direction); // direction = (1 : forward, 0 : backward)
 
 public:
     Encoder(uint16_t wheelDiameter, uint16_t encoderResolution, volatile uint32_t* inputAgpioIDRaddr, volatile uint32_t* inputBgpioIDRaddr, uint32_t inputAgpioIDRMask, uint32_t inputBgpioIDRMask, void (*handler)(uint16_t, uint16_t, bool));
-    void trigger(bool pinTriggered);// pin = (0 : A, 1 : B)
+    void trigger();
     uint32_t getTotalDistance();
     uint32_t getDistanceSinceLastCall();
     void resetToZero();

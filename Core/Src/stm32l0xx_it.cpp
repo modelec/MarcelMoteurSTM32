@@ -58,7 +58,7 @@
 /* External variables --------------------------------------------------------*/
 
 /* USER CODE BEGIN EV */
-extern Encoder encoder1;
+
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -147,11 +147,15 @@ void SysTick_Handler(void)
 void EXTI0_1_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_1_IRQn 0 */
-  encoder1.trigger(0); // trigger pin A de l'encodeur sur PC0
-  /* USER CODE END EXTI0_1_IRQn 0 */
+
+	// On branche le fil A et le fil B du meme encodeur sur la meme interruption et on determine nous meme lequel a trigger l'interruption
+
+	/* USER CODE END EXTI0_1_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
   /* USER CODE BEGIN EXTI0_1_IRQn 1 */
+
+  // Est ce que le callback est appelé deux fois à la suite ??
 
   /* USER CODE END EXTI0_1_IRQn 1 */
 }
@@ -162,8 +166,8 @@ void EXTI0_1_IRQHandler(void)
 void EXTI2_3_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI2_3_IRQn 0 */
-  encoder1.trigger(1); // trigger pin B de l'encodeur sur PC2
-  /* USER CODE END EXTI2_3_IRQn 0 */
+
+	/* USER CODE END EXTI2_3_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
   /* USER CODE BEGIN EXTI2_3_IRQn 1 */

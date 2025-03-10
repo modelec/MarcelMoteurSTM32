@@ -72,7 +72,8 @@ void handleEncoderProgression(uint16_t totalDistance, uint16_t newDistance, bool
 	}
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
 }
-Encoder encoder1(60000, 600, &GPIOC->IDR, &GPIOC->IDR, (1<<0), (1<<2), &handleEncoderProgression);
+Encoder encoder1(60000, 600, &GPIOC->IDR, &GPIOC->IDR, (1<<0), (1<<1), &handleEncoderProgression);
+Encoder encoder2(60000, 600, &GPIOC->IDR, &GPIOC->IDR, (1<<2), (1<<3), &handleEncoderProgression);
 
 /* USER CODE END 0 */
 
@@ -340,7 +341,14 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if(GPIO_Pin == GPIO_PIN_0 || GPIO_Pin == GPIO_PIN_1) {
+	  encoder1.trigger(); // trigger de l'encodeur 1
+  } else if (GPIO_Pin == GPIO_PIN_2 || GPIO_Pin == GPIO_PIN_3) {
+	  encoder2.trigger(); // trigger de l'encodeur 2
+  }
+}
 /* USER CODE END 4 */
 
 /**

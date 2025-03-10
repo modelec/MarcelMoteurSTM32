@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "functions.h"
+#include "encoder.h"
 #include <stdio.h>
 #include <cstring>
 
@@ -71,6 +72,8 @@ void handleEncoderProgression(uint16_t totalDistance, uint16_t newDistance, bool
 	}
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
 }
+Encoder encoder1(60000, 600, &GPIOC->IDR, &GPIOC->IDR, (1<<0), (1<<2), &handleEncoderProgression);
+
 /* USER CODE END 0 */
 
 /**
@@ -110,7 +113,6 @@ int main(void) {
 
 
 	// Initialisation encodeur1 avec roue 60cm, resolution 600 pts par tour, entree A sur PC0, entree B sur PC2
-	Encoder encoder1(60000, 600, &GPIOC->IDR, &GPIOC->IDR, (1<<0), (1<<2), &handleEncoderProgression);
 	Motor motor(TIM3);
 
 	//On fait accélérer les moteurs

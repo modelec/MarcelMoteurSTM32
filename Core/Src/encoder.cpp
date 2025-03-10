@@ -5,7 +5,7 @@
  *      Author: allan
  */
 
-#include <encoder.h>
+#include "encoder.h"
 
 Encoder::Encoder(uint16_t wheelDiameter, uint16_t encoderResolution, volatile uint32_t* inputAgpioIDRaddr, volatile uint32_t* inputBgpioIDRaddr, uint32_t inputAgpioIDRMask, uint32_t inputBgpioIDRMask, void(*handler)(uint16_t, uint16_t, bool)) : handler(handler), inputAgpioIDRaddr(inputAgpioIDRaddr), inputBgpioIDRaddr(inputBgpioIDRaddr), inputAgpioIDRMask(inputAgpioIDRMask), inputBgpioIDRMask(inputBgpioIDRMask), totalDistance(0), latestHandledDistance(0) {
 	this->tickDistance = (uint16_t)(wheelDiameter * 3.14 / encoderResolution);
@@ -62,11 +62,11 @@ void Encoder::trigger(bool pinTriggered){
 	if(direction == EncoderDirectionForward){
 		// On ajoute la distance parcourue et on appelle le handler
 		this->totalDistance += (int32_t)this->tickDistance;
-		this->handler(this->totalDistance, this->tickDiameter, 1);
+		this->handler(this->totalDistance, this->tickDistance, 1);
 	} else if(direction == EncoderDirectionBackward){
 		// On retire la distance parcourue et on appelle le handler
 		this->totalDistance -= (int32_t)this->tickDistance;
-		this->handler(this->totalDistance, this->tickDiameter, 0);
+		this->handler(this->totalDistance, this->tickDistance, 0);
 	} else {
 		return; //error
 	}

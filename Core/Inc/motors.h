@@ -10,15 +10,23 @@ private:
     uint16_t targetSpeed;
     bool isAccelerating;
     bool isReversing;
+    bool isTurningRightForward = false;
+    bool isTurningLeftForward = false;
+    bool isTurningRightBackward = false;
+    bool isTurningLeftBackward = false;
 
 public:
     Motor(TIM_TypeDef *timer);
     void accelerer(int speed);
     void reculer(int speed);
-    void ralentir();
-    void ralentirEnvers();
     void stop();
+    void tournerDroiteAvancer(int speed);
+    void tournerGaucheAvancer(int speed);
+    void tournerDroiteReculer(int speed);
+    void tournerGaucheReculer(int speed);
+    void stopTurning();
     void update();
+
 };
 
 

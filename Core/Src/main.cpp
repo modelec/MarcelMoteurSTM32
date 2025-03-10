@@ -102,8 +102,7 @@ int main(void) {
 	Motor motor(TIM3);
 
 	//On fait accélérer les moteurs
-	motor.accelerer(626);
-
+	motor.accelerer(300);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */

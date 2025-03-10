@@ -3,6 +3,9 @@
 
 #include "functions.h"
 #include "motors.h"
+#include "encoder.h"
+
+extern Encoder encoder1;
 
 
 uint32_t lastTick = 0; // Variable pour mémoriser l'heure de la dernière action
@@ -25,9 +28,12 @@ void Cpploop(Motor *motor){
 
 	//On actualise toute les 10ms et on effectue tous les controles périodiques
 	if(isDelayPassed(10)) {
-
+		if(encoder1.getTotalDistance() > 10) {
+			motor->stop();
+		}
 		//On met à jour le statut des moteurs
 		motor->update();
+
 	}
 
 

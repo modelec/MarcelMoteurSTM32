@@ -76,12 +76,12 @@ float Motor::distance() {
 }
 
 void Motor::avancerDe(float distance, int speed) {
-    float d_ini = distance();
+    float d_ini = distance;
 
     if (distance > 0) {
         accelerer(speed);
 
-        while (distance() - d_ini < distance) {
+        while (distance - d_ini < distance) {
             // avance tant que la distance n'est pas atteinte
         }
 

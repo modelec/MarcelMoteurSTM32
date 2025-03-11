@@ -35,19 +35,13 @@ void Cpploop(Motor *motor) {
 				motor->accelerer(300);
 				break;
 			case 1:
-				motor->tournerGaucheAvancer(600);
+				motor->tournerGauche(300);
 				break;
 			case 2:
-				motor->tournerDroiteAvancer(600);
+				motor->tournerDroite(300);
 				break;
 			case 3:
-				motor->reculer(50);
-				break;
-			case 4:
-				motor->tournerGaucheReculer(100);
-				break;
-			case 5:
-				motor->tournerDroiteReculer(100);
+				motor->reculer(300);
 				break;
 			default:
 				motor->stop();

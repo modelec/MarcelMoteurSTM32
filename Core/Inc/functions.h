@@ -11,6 +11,7 @@
 #define FUNCTIONS_H_
 
 void Cpploop(Motor *motor);
+void handleEncoderProgression(uint16_t totalDistance, uint16_t newDistance, bool direction);
 
 
 #endif /* FUNCTIONS_H_ */

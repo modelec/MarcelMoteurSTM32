@@ -21,7 +21,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "modelec.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,6 +30,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+void ModelecOdometrySetup();
+
+void ModelecOdometryLoop();
 
 /* USER CODE END PD */
 
@@ -106,7 +108,8 @@ int main(void)
   while (1)
   {
 	ModelecOdometryLoop();
-    /* USER CODE END WHILE */
+
+	/* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }

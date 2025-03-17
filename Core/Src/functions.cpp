@@ -22,21 +22,6 @@ bool isDelayPassed(uint32_t delay) {
     return false;
 }
 
-
-void Cpploop(Motor *motor){
-
-	GPIOC->ODR ^= (1<<10);
-
-	//On actualise toute les 10ms et on effectue tous les controles périodiques
-	if(isDelayPassed(10)) {
-		if(encoder1.getTotalDistance() > 10) {
-			motor->stop();
-		}
-		//On met à jour le statut des moteurs
-		motor->update();
-	}
-}
-
 void handleEncoderProgression(uint16_t totalDistance, uint16_t newDistance, bool direction){
 	char msg[128];
 	if(direction == 0){

@@ -102,7 +102,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
-
+  //HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
   ModelecOdometrySetup();
   /* USER CODE END 2 */
 

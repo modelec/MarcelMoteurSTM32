@@ -47,10 +47,6 @@ void ModelecOdometryLoop();
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint32_t rawCounter = 0;
-uint32_t counter = 0;
-uint32_t last_counter = 0;
-uint32_t blink_delay = 200;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,12 +92,14 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM3_Init();
   MX_TIM2_Init();
+  MX_TIM21_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
+  HAL_TIM_Encoder_Start(&htim21, TIM_CHANNEL_ALL);
   //HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
   ModelecOdometrySetup();
   /* USER CODE END 2 */
@@ -115,7 +113,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	rawCounter = __HAL_TIM_GET_COUNTER(&htim2);
   }
   /* USER CODE END 3 */
 }

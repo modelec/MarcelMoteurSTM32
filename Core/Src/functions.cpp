@@ -3,11 +3,9 @@
 
 #include "functions.h"
 #include "motors.h"
-#include "encoder.h"
 #include <cstdio>
 #include <cstring>
 
-extern Encoder encoder1;
 extern UART_HandleTypeDef huart2;
 
 uint32_t lastTick = 0; // Variable pour mémoriser l'heure de la dernière action

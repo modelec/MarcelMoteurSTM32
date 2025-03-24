@@ -17,8 +17,8 @@
 extern "C" {
 	// Variables globales
 	Motor motor(TIM3);
-	Encoder encoder1(60000, 600, &GPIOC->IDR, &GPIOC->IDR, (1<<0), (1<<1), &handleEncoderProgression);
-	Encoder encoder2(60000, 600, &GPIOC->IDR, &GPIOC->IDR, (1<<2), (1<<3), &handleEncoderProgression);
+	Encoder encoder1(820, 600, &GPIOC->IDR, &GPIOC->IDR, (1<<0), (1<<1), &handleEncoderProgression);
+	Encoder encoder2(820, 600, &GPIOC->IDR, &GPIOC->IDR, (1<<2), (1<<3), &handleEncoderProgression);
 
 	extern TIM_HandleTypeDef htim3;
 	extern UART_HandleTypeDef huart2;
@@ -26,6 +26,7 @@ extern "C" {
 	// Fonction de setup appelee au debut du main.c
 	void ModelecOdometrySetup(){
 		HAL_UART_Transmit(&huart2, (uint8_t *)"SETUP COMPLETE\n", 15, HAL_MAX_DELAY);
+		motor.accelerer(300);
 	}
 
 	// Fonction de loop appelee en boucle dans le main.c
@@ -34,7 +35,7 @@ extern "C" {
 
 		//On actualise toute les 10ms et on effectue tous les controles périodiques
 		if(isDelayPassed(10)) {
-			if(encoder1.getTotalDistance() > 10) {
+			if(encoder1.getTotalDistance() > 100 && encoder2.getTotalDistance() > 100) {
 				motor.stop();
 			}
 			//On met à jour le statut des moteurs

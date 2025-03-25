@@ -40,7 +40,7 @@ extern "C" {
 	// Fonction de setup appelee au debut du main.c
 	void ModelecOdometrySetup(){
 		HAL_UART_Transmit(&huart2, (uint8_t *)"SETUP COMPLETE\n", 15, HAL_MAX_DELAY);
-		motor.accelerer(500);
+		motor.accelerer(300);
 	}
 
 	// Fonction de loop appelee en boucle dans le main.c
@@ -63,8 +63,8 @@ extern "C" {
 
 	    // Debug
 		char msg[128];
-		sprintf(msg, "Encodeur droit %d.\r\n", pos_right);
-		sprintf(msg, "Encodeur gauche %d.\r\n", pos_left);
+		sprintf(msg, "Encodeur droit %ld.\r\n", pos_right);
+		sprintf(msg, "Encodeur gauche %ld.\r\n", pos_left);
 	    HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
 
 	    // Calcul des variations d’impulsions

@@ -57,6 +57,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+int32_t counter = 0;
 
 /* USER CODE END 0 */
 
@@ -109,11 +110,13 @@ int main(void)
   while (1)
   {
 	ModelecOdometryLoop();
-
+	counter = __HAL_TIM_GET_COUNTER(&htim2);
+	//__HAL_TIM_IS_TIM_COUNTING_DOWN
     /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
   }
+  /* USER CODE BEGIN 3 */
+
   /* USER CODE END 3 */
 }
 

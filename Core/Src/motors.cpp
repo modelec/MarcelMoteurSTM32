@@ -17,24 +17,10 @@ void Motor::reculer(int speed) {
 	isAccelerating = false;
 }
 
-void Motor::ralentir() {
-	targetSpeed = 0;
-	isAccelerating = true;
-	isReversing = false;
-}
-
-void Motor::ralentirEnvers() {
-	targetSpeed = 0;
-	isReversing = true;
-	isAccelerating = false;
-}
-
 void Motor::stop() {
-	currentSpeed = 0;
 	targetSpeed = 0;
-	isAccelerating = false;
-	isReversing = false;
 }
+
 
 void Motor::update() {
 	// Gestion de l'accélération/décélération
@@ -42,8 +28,14 @@ void Motor::update() {
 		currentSpeed++;
 	} else if (isReversing && currentSpeed > -targetSpeed) {
 		currentSpeed--;
-	} else if (!isAccelerating && !isReversing && currentSpeed > targetSpeed) {
-		currentSpeed--;
+	} else if (currentSpeed > targetSpeed) {
+		if(currentSpeed - 25 >= 0) {
+			//Ralentir rapidement
+			currentSpeed-=25;
+		}
+		else {
+			currentSpeed--;
+		}
 	}
 
 	// Mise à jour des registres du timer
@@ -51,17 +43,10 @@ void Motor::update() {
 		//2 et 3 avance
 	    tim->CCR2 = currentSpeed;
 	    tim->CCR3 = currentSpeed;
-
 	} else if (isReversing) {
 		// 1 et 4 recule
 		tim->CCR1 = currentSpeed;
 		tim->CCR4 = currentSpeed;
-
 	}
 
-	// Arrêt si vitesse cible atteinte
-	if (currentSpeed == targetSpeed) {
-		isAccelerating = false;
-		isReversing = false;
-	}
 }

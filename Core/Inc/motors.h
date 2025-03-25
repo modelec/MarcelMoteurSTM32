@@ -15,8 +15,6 @@ public:
     Motor(TIM_TypeDef *timer);
     void accelerer(int speed);
     void reculer(int speed);
-    void ralentir();
-    void ralentirEnvers();
     void stop();
     void update();
 };

@@ -11,12 +11,11 @@
 #include <array>
 #include <cstdint>
 
-enum class StatePoint {
-    UNKNOWN,
-    START,
-    END,
-    INTERMEDIATE
-};
+typedef enum StatePoint {
+    INTERMEDIAIRE,
+    FINAL,
+    NONDETERMINE
+}StatePoint;
 
 class Point {
 private:
@@ -28,7 +27,7 @@ private:
 
 public:
     // Constructeur
-    Point(float x = 0.0, float y = 0.0, float theta = 0.0, StatePoint state = StatePoint::UNKNOWN);
+    Point(float x = 0.0, float y = 0.0, float theta = 0.0, StatePoint state = StatePoint::INTERMEDIAIRE);
 
     // Setters
     void setX(float x);

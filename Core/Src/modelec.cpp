@@ -7,7 +7,6 @@
 
 
 #include "motors.h"
-#include "functions.h"
 #include "main.h"
 #include "stm32l0xx_hal.h"
 #include <cstdio>
@@ -36,6 +35,16 @@ extern "C" {
 	extern TIM_HandleTypeDef htim2;
 	extern TIM_HandleTypeDef htim21;
 	extern UART_HandleTypeDef huart2;
+
+	uint32_t lastTick = 0; // Variable pour mémoriser l'heure de la dernière action
+	// Fonction pour vérifier si le délai est passé (permet de ne pas bloquer l'exécution)
+	bool isDelayPassed(uint32_t delay) {
+	    if (HAL_GetTick() - lastTick >= delay) {
+	        lastTick = HAL_GetTick();  // Met à jour lastTick
+	        return true;
+	    }
+	    return false;
+	}
 
 	// Fonction de setup appelee au debut du main.c
 	void ModelecOdometrySetup(){

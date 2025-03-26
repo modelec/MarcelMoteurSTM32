@@ -27,6 +27,7 @@ void Motor::stop() {
 bool Motor::isStopped() {
 	return currentSpeed == 0;
 }
+
 void Motor::tournerDroite(int speed) {
 	targetSpeed = (speed <= 626) ? speed : 626;
 	isTurningRight = true;

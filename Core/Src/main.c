@@ -47,6 +47,7 @@ void ModelecOdometryLoop();
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -102,6 +103,7 @@ int main(void)
   HAL_TIM_Encoder_Start(&htim21, TIM_CHANNEL_ALL);
   //HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
   ModelecOdometrySetup();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */

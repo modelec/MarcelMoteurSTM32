@@ -41,6 +41,19 @@ float Pid::getKd(){
 }
 
 
+//Methodes
+int Pid::getPWMCommand(float vitesse){
+	/*
+	 * Passer du rpm à m/s : 75/60 = 1.25 (nb tour en 1s). circonférence = pi*diamètre roues. Vitesse en m/s = circonférence * nb tour/s
+	 *
+	 */
+	if(vitesse >= 0.235){		//si on dépasse la vmax qu'on peut atteindre, on bride
+		return 626;
+	} else{
+		float pwm = (626*vitesse) / 0.235;		//produit en croix
+		return std::floor(pwm);
+	}
+}
 
 
 

@@ -47,6 +47,9 @@ public:
     float getKp();
     float getKi();
     float getKd();
+
+    //Methodes
+    float getPWMCommand(float vitesse);
 };
 
 

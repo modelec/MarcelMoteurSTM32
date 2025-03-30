@@ -13,7 +13,7 @@ private:
 
 public:
     void setTargetSpeed(int pwm);
-
+    float getCurrentSpeed();
 
     Motor(TIM_TypeDef *timer);
     void accelerer(int speed);

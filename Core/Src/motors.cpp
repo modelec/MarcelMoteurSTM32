@@ -19,6 +19,10 @@ void Motor::setTargetSpeed(int pwm){
 
 }
 
+float Motor::getCurrentSpeed(){
+	return this->currentSpeed;
+}
+
 
 void Motor::accelerer(int speed) {
 	targetSpeed = (speed <= 626) ? speed : 626;

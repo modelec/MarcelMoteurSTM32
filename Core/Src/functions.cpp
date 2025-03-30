@@ -38,11 +38,13 @@ void handleEncoderProgression(uint16_t totalDistance, uint16_t newDistance, bool
 void determinationCoefVitesse(float objectifVitesse){
 	Motor motorG(TIM3);
 	Motor motorD(TIM3);
-	if(vitesse<=0.235){
-		PidVitesse pid(0, 0, 0, objectifVitesse);
-		float nouvelOrdre = pid.updateNouvelleVitesse(motorD.currentSpeed);
+	float nouvelOrdre;
+	PidVitesse pid(0, 0, 0, objectifVitesse);
+	if(objectifVitesse<=0.235){
+		pid.updateNouvelleVitesse(motorD.getCurrentSpeed());
+		nouvelOrdre = pid.getNouvelleConsigneVitesse();
 	}else{
-		float nouvelOrdre = 0.235;
+		nouvelOrdre = 0.235;
 	}
 
 	int ordrePWM = pid.getPWMCommand(nouvelOrdre);

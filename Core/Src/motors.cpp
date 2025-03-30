@@ -1,9 +1,24 @@
 #include <motors.h>
 
+
+
+
+
 Motor::Motor(TIM_TypeDef *timer) :
 		tim(timer), currentSpeed(0), targetSpeed(0), isAccelerating(false), isReversing(
 				false) {
 }
+
+
+void Motor::setTargetSpeed(int pwm){
+	if(pwm < 626){
+		this->targetSpeed = pwm;
+	}else{
+		this->targetSpeed = 626;
+	}
+
+}
+
 
 void Motor::accelerer(int speed) {
 	targetSpeed = (speed <= 626) ? speed : 626;

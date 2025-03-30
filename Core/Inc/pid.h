@@ -49,7 +49,7 @@ public:
     float getKd();
 
     //Methodes
-    float getPWMCommand(float vitesse);
+    int getPWMCommand(float vitesse);			//convertir des m/s en notre signal pwm
 };
 
 

@@ -12,6 +12,9 @@ private:
     bool isReversing;
 
 public:
+    void setTargetSpeed(int pwm);
+
+
     Motor(TIM_TypeDef *timer);
     void accelerer(int speed);
     void reculer(int speed);

@@ -22,7 +22,7 @@ extern UART_HandleTypeDef huart2;
 Motor motor(TIM3);
 
 // Données odométriques
-volatile int32_t lastPosRight = 0, lastPosLeft = 0;
+volatile int lastPosRight = 0, lastPosLeft = 0;
 volatile float totalDistance = 0.0f;
 volatile float posX = 0.0f, posY = 0.0f, theta = 0.0f;
 
@@ -42,11 +42,11 @@ void ModelecOdometrySetup() {
 }
 
 void ModelecOdometryUpdate() {
-    int32_t posRight = __HAL_TIM_GET_COUNTER(&htim2);
-    int32_t posLeft  = __HAL_TIM_GET_COUNTER(&htim21);
+    int posRight = __HAL_TIM_GET_COUNTER(&htim2);
+    int posLeft  = __HAL_TIM_GET_COUNTER(&htim21);
 
-    int32_t deltaP_right = posRight - lastPosRight;
-    int32_t deltaP_left  = posLeft - lastPosLeft;
+    int deltaP_right = posRight - lastPosRight;
+    int deltaP_left  = posLeft - lastPosLeft;
 
     if (deltaP_right > MAX_COUNT / 2) deltaP_right -= MAX_COUNT;
     if (deltaP_right < -MAX_COUNT / 2) deltaP_right += MAX_COUNT;
@@ -60,10 +60,18 @@ void ModelecOdometryUpdate() {
     //Calcul de l'angle theta
     float deltaTheta = (deltaS_right - deltaS_left) / WHEEL_BASE;
 
+    if (fabs(deltaP_right - deltaP_left) < 5) {  // Seulement si on est "presque" en ligne droite
+        if (fabs(deltaTheta) > 0.1) {
+            deltaTheta = 0;
+        }
+    }
+
     //On met à jour la distance parcourue totale
     totalDistance += fabs(deltaS);
 
     theta += deltaTheta;
+    // Normalisation de theta dans [-π, π]
+    theta = fmod(theta + M_PI, 2 * M_PI) - M_PI;
 
     float deltaX = deltaS * cos(theta);
     float deltaY = deltaS * sin(theta);
@@ -86,7 +94,7 @@ void ModelecOdometryLoop() {
     if (isDelayPassed(10)) {
         ModelecOdometryUpdate();
         motor.update();
-        if (totalDistance >= 150) {
+        if (posX >= 200) {
             motor.stop();
         }
     }

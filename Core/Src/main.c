@@ -58,7 +58,8 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int counter1=0;
+int counter2=0;
 /* USER CODE END 0 */
 
 /**

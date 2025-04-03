@@ -13,18 +13,19 @@ extern TIM_HandleTypeDef htim21;
 extern UART_HandleTypeDef huart2;
 
 // Variables globales
-#define IMPULSIONS 600
-#define WHEEL_DIAMETER 0.082
-#define WHEEL_BASE 0.17
-#define MAX_COUNT 65535
+// Constants
+#define COUNTS_PER_REV    2400.0f    // 600 PPR × 4
+#define WHEEL_DIAMETER    0.081f       // meters
+#define WHEEL_BASE        0.287f       // meters
+#define WHEEL_CIRCUMFERENCE (M_PI * WHEEL_DIAMETER)
 
 // Contrôle des moteurs
 Motor motor(TIM3);
 
 // Données odométriques
-volatile int lastPosRight = 0, lastPosLeft = 0;
-volatile float totalDistance = 0.0f;
-volatile float posX = 0.0f, posY = 0.0f, theta = 0.0f;
+uint16_t lastPosRight, lastPosLeft;
+// x et y sont en mètres
+float x, y, theta;
 
 uint32_t lastTick = 0;
 
@@ -38,63 +39,58 @@ bool isDelayPassed(uint32_t delay) {
 
 void ModelecOdometrySetup() {
     HAL_UART_Transmit(&huart2, (uint8_t*) "SETUP COMPLETE\n", 15, HAL_MAX_DELAY);
+    lastPosRight = __HAL_TIM_GET_COUNTER(&htim2);
+    lastPosLeft = __HAL_TIM_GET_COUNTER(&htim21);
+    x=0.0f;
+    y=0.0f;
+    theta=0.0f;
     motor.accelerer(300);
 }
 
 void ModelecOdometryUpdate() {
-    int posRight = __HAL_TIM_GET_COUNTER(&htim2);
-    int posLeft  = __HAL_TIM_GET_COUNTER(&htim21);
+	//On récupère la valeur des compteurs
+    uint16_t posRight = __HAL_TIM_GET_COUNTER(&htim2);
+    uint16_t posLeft  = __HAL_TIM_GET_COUNTER(&htim21);
 
-    int deltaP_right = posRight - lastPosRight;
-    int deltaP_left  = posLeft - lastPosLeft;
+    //On calcule les deltas
+    int16_t deltaLeft = (int16_t)(posLeft - lastPosLeft);
+    int16_t deltaRight = (int16_t)(posRight - lastPosRight);
 
-    if (deltaP_right > MAX_COUNT / 2) deltaP_right -= MAX_COUNT;
-    if (deltaP_right < -MAX_COUNT / 2) deltaP_right += MAX_COUNT;
-    if (deltaP_left > MAX_COUNT / 2) deltaP_left -= MAX_COUNT;
-    if (deltaP_left < -MAX_COUNT / 2) deltaP_left += MAX_COUNT;
-
-    float deltaS_right = ((deltaP_right / (float)(IMPULSIONS * 4)) * M_PI * WHEEL_DIAMETER) * 1000.0f;
-    float deltaS_left  = ((deltaP_left / (float)(IMPULSIONS * 4)) * M_PI * WHEEL_DIAMETER) * 1000.0f;
-
-    float deltaS = (deltaS_right + deltaS_left) / 2.0f;
-    //Calcul de l'angle theta
-    float deltaTheta = (deltaS_right - deltaS_left) / WHEEL_BASE;
-
-    if (fabs(deltaP_right - deltaP_left) < 5) {  // Seulement si on est "presque" en ligne droite
-        if (fabs(deltaTheta) > 0.1) {
-            deltaTheta = 0;
-        }
-    }
-
-    //On met à jour la distance parcourue totale
-    totalDistance += fabs(deltaS);
-
-    theta += deltaTheta;
-    // Normalisation de theta dans [-π, π]
-    theta = fmod(theta + M_PI, 2 * M_PI) - M_PI;
-
-    float deltaX = deltaS * cos(theta);
-    float deltaY = deltaS * sin(theta);
-
-    //Mise à jour de la position X et Y
-    posX += deltaX;
-    posY += deltaY;
-
-    lastPosRight = posRight;
+    //On met à jour la dernière position
     lastPosLeft = posLeft;
+    lastPosRight = posRight;
+
+   //On convertit en distance (mètres)
+    float distLeft = (deltaLeft / COUNTS_PER_REV) * WHEEL_CIRCUMFERENCE;
+    float distRight = (deltaRight / COUNTS_PER_REV) * WHEEL_CIRCUMFERENCE;
+
+    //On calcule les déplacements
+    float linear = (distLeft + distRight) / 2.0f;
+    float deltaTheta = (distRight - distLeft) / WHEEL_BASE;
+
+    //On met à jour la position
+    float avgTheta = theta +  deltaTheta / 2.0f;
+    x += linear * cosf(avgTheta);
+    y += linear * sinf(avgTheta);
+    theta += deltaTheta;
+
+    //On normalise theta
+    theta = fmodf(theta, 2.0f * M_PI);
+    if (theta < 0) theta += 2.0f * M_PI;
 
     char msg[128];
-    sprintf(msg, "X: %.3f mm, Y: %.3f mm, Theta: %.3f rad, Distance: %.3f mm\r\n", posX, posY, theta, totalDistance);
+    sprintf(msg, "X: %.3f m, Y: %.3f m, Theta: %.3f rad\r\n", x, y, theta);
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
 }
 
 void ModelecOdometryLoop() {
     GPIOC->ODR ^= (1 << 10);
 
+    //On met à jour toutes les 10ms
     if (isDelayPassed(10)) {
         ModelecOdometryUpdate();
         motor.update();
-        if (posX >= 200) {
+        if (x >= 0.20) {
             motor.stop();
         }
     }

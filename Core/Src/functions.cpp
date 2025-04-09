@@ -52,5 +52,31 @@ void determinationCoefVitesse(float objectifVitesse){
 	motorG.setTargetSpeed(ordrePWM);				//nouvel ordre aux moteurs gauches et droits de vitesse
 }
 
+void determinationCoefPosition(Point objectifPoint, Point pointActuel){
+	Motor motorG(TIM3);
+	Motor motorD(TIM3);
+
+	PidPosition pid(0,0,0,0,0,0,objectifPoint);
+
+	std::array<double, 2> vitesse = pid.updateNouvelOrdreVitesse(pointActuel);
+	PidVitesse pidG(0, 0, 0, vitesse[0]);
+	PidVitesse pidD(0, 0, 0, vitesse[1]);
+
+	pidG.updateNouvelleVitesse(motorG.getCurrentSpeed());
+	pidD.updateNouvelleVitesse(motorD.getCurrentSpeed());
+
+	float nouvelOrdreG = pidG.getNouvelleConsigneVitesse();
+	float nouvelOrdreD = pidD.getNouvelleConsigneVitesse();
+
+	int ordrePWMG = pidG.getPWMCommand(nouvelOrdreG);
+	int ordrePWMD = pidD.getPWMCommand(nouvelOrdreD);
+
+
+	motorG.setTargetSpeed(ordrePWMG);
+	motorD.setTargetSpeed(ordrePWMD);
+
+
+}
+
 
 #endif /* SRC_FUNCTIONS_C_ */

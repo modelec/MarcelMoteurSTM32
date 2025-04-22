@@ -15,6 +15,8 @@ private:
 
 public:
     Motor(TIM_TypeDef *timer);
+    void setTargetSpeed(int pwm);
+    float getCurrentSpeed();
     void accelerer(int speed);
     void reculer(int speed);
     void stop();

@@ -19,6 +19,18 @@ void Motor::reculer(int speed) {
 	this->stopTurning();
 }
 
+void Motor::setTargetSpeed(int pwm){
+	if(pwm < 626){
+		this->targetSpeed = pwm;
+	}else{
+		this->targetSpeed = 626;
+	}
+
+}
+float Motor::getCurrentSpeed(){
+	return this->currentSpeed;
+}
+
 void Motor::stop() {
 	targetSpeed = 0;
 	this->stopTurning();

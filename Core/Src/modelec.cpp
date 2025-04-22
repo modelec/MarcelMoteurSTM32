@@ -29,12 +29,16 @@ float x, y, theta;
 
 uint32_t lastTick = 0;
 
-bool isDelayPassed(uint32_t delay) {
-    if (HAL_GetTick() - lastTick >= delay) {
-        lastTick = HAL_GetTick();
+
+bool isDelayPassedFrom(uint32_t delay, uint32_t *lastTick) {
+    if (HAL_GetTick() - *lastTick >= delay) {
+        *lastTick = HAL_GetTick();
         return true;
     }
     return false;
+}
+bool isDelayPassed(uint32_t delay) {
+    return isDelayPassedFrom(delay, &lastTick);
 }
 
 void ModelecOdometrySetup() {
@@ -83,6 +87,8 @@ void ModelecOdometryUpdate() {
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
 }
 
+
+
 void ModelecOdometryLoop() {
     GPIOC->ODR ^= (1 << 10);
 
@@ -90,10 +96,12 @@ void ModelecOdometryLoop() {
     if (isDelayPassed(10)) {
         ModelecOdometryUpdate();
         motor.update();
+        // à 20 cm on s'arrête
         if (x >= 0.20) {
-            motor.stop();
+        	motor.stop();
         }
     }
+
 }
 
 }

@@ -46,18 +46,14 @@ bool isDelayPassed(uint32_t delay) {
 
 //PID
 void determinationCoefPosition(Point objectifPoint, Point pointActuel){
-	//à AJUSTER CAR NORMALEMENT IL Y A UN SEUL OBJET MOTEUR, il faut contrôler le signal avec CCR1, CCR2,CCR3,CCR4
-	Motor motorG(TIM3);
-	Motor motorD(TIM3);
-
 	PidPosition pid(0,0,0,0,0,0,objectifPoint);
 
 	std::array<double, 2> vitesse = pid.updateNouvelOrdreVitesse(pointActuel);
 	PidVitesse pidG(0, 0, 0, vitesse[0]);
 	PidVitesse pidD(0, 0, 0, vitesse[1]);
 
-	pidG.updateNouvelleVitesse(motorG.getCurrentSpeed());
-	pidD.updateNouvelleVitesse(motorD.getCurrentSpeed());
+	pidG.updateNouvelleVitesse(motor.getLeftCurrentSpeed());
+	pidD.updateNouvelleVitesse(motor.getRightCurrentSpeed());
 
 	float nouvelOrdreG = pidG.getNouvelleConsigneVitesse();
 	float nouvelOrdreD = pidD.getNouvelleConsigneVitesse();
@@ -66,8 +62,8 @@ void determinationCoefPosition(Point objectifPoint, Point pointActuel){
 	int ordrePWMD = pidD.getPWMCommand(nouvelOrdreD);
 
 
-	motorG.setTargetSpeed(ordrePWMG);
-	motorD.setTargetSpeed(ordrePWMD);
+	motor.setLeftTargetSpeed(ordrePWMG);
+	motor.setRightTargetSpeed(ordrePWMD);
 
 
 }

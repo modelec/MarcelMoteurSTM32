@@ -1,54 +1,74 @@
 #include <motors.h>
 
 Motor::Motor(TIM_TypeDef *timer) :
-		tim(timer), currentSpeed(0), targetSpeed(0), isAccelerating(false), isReversing(
+		tim(timer), rightCurrentSpeed(0),leftCurrentSpeed(0), rightTargetSpeed(0),leftTargetSpeed(0), isAccelerating(false), isReversing(
 				false), isTurningRight(false), isTurningLeft(false) {
 }
 
 void Motor::accelerer(int speed) {
-	targetSpeed = (speed <= 626) ? speed : 626;
+	speed = (speed <= 626) ? speed : 626;
+	rightTargetSpeed = speed;
+	leftTargetSpeed = speed;
 	isAccelerating = true;
 	isReversing = false;
 	this->stopTurning();
 }
 
 void Motor::reculer(int speed) {
-	targetSpeed = (speed <= 626) ? speed : 626;
+	speed = (speed <= 626) ? speed : 626;
+	rightTargetSpeed = speed;
+	leftTargetSpeed = speed;
 	isReversing = true;
 	isAccelerating = false;
 	this->stopTurning();
 }
 
-void Motor::setTargetSpeed(int pwm){
+void Motor::setRightTargetSpeed(int pwm){
 	if(pwm < 626){
-		this->targetSpeed = pwm;
+		this->rightTargetSpeed = pwm;
 	}else{
-		this->targetSpeed = 626;
+		this->rightTargetSpeed = 626;
 	}
 
 }
-float Motor::getCurrentSpeed(){
-	return this->currentSpeed;
+void Motor::setLeftTargetSpeed(int pwm){
+	if(pwm < 626){
+		this->leftTargetSpeed = pwm;
+	}else{
+		this->leftTargetSpeed = 626;
+	}
+
+}
+float Motor::getRightCurrentSpeed(){
+	return this->rightCurrentSpeed;
+}
+float Motor::getLeftCurrentSpeed(){
+	return this->leftCurrentSpeed;
 }
 
 void Motor::stop() {
-	targetSpeed = 0;
+	rightTargetSpeed = 0;
+	leftTargetSpeed = 0;
 	this->stopTurning();
 }
 
 bool Motor::isStopped() {
-	return currentSpeed == 0;
+	return rightCurrentSpeed == 0 && leftCurrentSpeed == 0 && rightTargetSpeed == 0 && leftTargetSpeed == 0;
 }
 
 void Motor::tournerDroite(int speed) {
-	targetSpeed = (speed <= 626) ? speed : 626;
+	speed = (speed <= 626) ? speed : 626;
+	rightTargetSpeed = speed / 2;
+	leftTargetSpeed = speed;
 	isTurningRight = true;
 	isTurningLeft = false;
 	isAccelerating = true;
 }
 
 void Motor::tournerGauche(int speed) {
-	targetSpeed = (speed <= 626) ? speed : 626;
+	speed = (speed <= 626) ? speed : 626;
+	rightTargetSpeed = speed;
+	leftTargetSpeed = speed / 2;
 	isTurningRight = false;
 	isTurningLeft = true;
 	isAccelerating = true;
@@ -59,41 +79,43 @@ void Motor::stopTurning() {
 }
 
 void Motor::update() {
-	// Gestion de l'accélération/décélération
-	if ((isAccelerating || isReversing) && currentSpeed < targetSpeed) {
-		currentSpeed++;
-	} else if (currentSpeed > targetSpeed) {
-		if(currentSpeed - 25 >= 0) {
-			//Ralentir rapidement
-			currentSpeed-=25;
-		}
-		else {
-			currentSpeed--;
-		}
-	}
+    // Mise à jour des vitesses pour chaque moteur
+    // Moteur gauche
+    if (leftCurrentSpeed < leftTargetSpeed) {
+        leftCurrentSpeed++;
+    } else if (leftCurrentSpeed > leftTargetSpeed) {
+        if (leftCurrentSpeed - 25 >= 0) {
+            leftCurrentSpeed -= 25;
+        } else {
+            leftCurrentSpeed--;
+        }
+    }
 
-	// Mise à jour des registres du timer pour contrôler les moteurs
-	if (isTurningRight) {
-		// Tourne à droite en avançant
-		tim->CCR2 = currentSpeed;
-		tim->CCR3 = currentSpeed / 2;
-	} else if (isTurningLeft) {
-		// Tourne à gauche en avançant
-		tim->CCR2 = currentSpeed / 2;
-		tim->CCR3 = currentSpeed;
-	} else {
-		// Mouvements standards
-		if (isAccelerating) {
-			tim->CCR2 = currentSpeed;
-			tim->CCR3 = currentSpeed;
-		} else if (isReversing) {
-			tim->CCR1 = currentSpeed;
-			tim->CCR4 = currentSpeed;
-		}
-	}
-	//Moteurs arrêtés
-	if(targetSpeed == 0 && currentSpeed == 0) {
-		isAccelerating = 0;
-		isReversing = 0;
-	}
+    // Moteur droit
+    if (rightCurrentSpeed < rightTargetSpeed) {
+        rightCurrentSpeed++;
+    } else if (rightCurrentSpeed > rightTargetSpeed) {
+        if (rightCurrentSpeed - 25 >= 0) {
+            rightCurrentSpeed -= 25;
+        } else {
+            rightCurrentSpeed--;
+        }
+    }
+
+    // Mise à jour des registres PWM du timer
+    // CCR2 = moteur gauche, CCR3 = moteur droit
+    if (isAccelerating || isTurningLeft || isTurningRight) {
+        tim->CCR2 = leftCurrentSpeed;
+        tim->CCR3 = rightCurrentSpeed;
+    } else if (isReversing) {
+        tim->CCR1 = leftCurrentSpeed; // Remplace CCR2 si tu fais marche arrière par CCR1
+        tim->CCR4 = rightCurrentSpeed; // Remplace CCR3 par CCR4 pour l'arrière
+    }
+
+    // Mise à jour de l'état de mouvement
+    if (isStopped()) {
+        isAccelerating = false;
+        isReversing = false;
+    }
 }
+

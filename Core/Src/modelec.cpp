@@ -123,11 +123,12 @@ void ModelecOdometryLoop() {
 	//On met à jour toutes les 10ms
 	if (isDelayPassed(10)) {
 		ModelecOdometryUpdate();
+		Point currentPoint(x, y,theta, StatePoint::INTERMEDIAIRE);
+		Point targetPoint(0.20, 0.20,0, StatePoint::FINAL);
+		determinationCoefPosition(currentPoint,targetPoint);
+
 		motor.update();
-		// à 20 cm on s'arrête
-		if (x >= 0.20) {
-			motor.stop();
-		}
+
 	}
 
 }

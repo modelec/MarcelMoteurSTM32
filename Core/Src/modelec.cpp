@@ -117,7 +117,16 @@ void ModelecOdometryUpdate() {
 	HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
 }
 
+void publishStatus(){
+
+}
+
+void receiveControlParams(){
+
+}
+
 void ModelecOdometryLoop() {
+	receiveControlParams();
 	GPIOC->ODR ^= (1 << 10);
 
 	//On met à jour toutes les 10ms
@@ -131,6 +140,7 @@ void ModelecOdometryLoop() {
 
 	}
 
+	publishStatus();
 }
 
 }

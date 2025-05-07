@@ -39,10 +39,10 @@ void Motor::setLeftTargetSpeed(int pwm){
 	}
 
 }
-float Motor::getRightCurrentSpeed(){
+int16_t Motor::getRightCurrentSpeed(){
 	return this->rightCurrentSpeed;
 }
-float Motor::getLeftCurrentSpeed(){
+int16_t Motor::getLeftCurrentSpeed(){
 	return this->leftCurrentSpeed;
 }
 
@@ -81,7 +81,7 @@ void Motor::stopTurning() {
 void Motor::update() {
     // Mise à jour des vitesses pour chaque moteur
     // Moteur gauche
-    if (leftCurrentSpeed < leftTargetSpeed) {
+    /*if (leftCurrentSpeed < leftTargetSpeed) {
         leftCurrentSpeed++;
     } else if (leftCurrentSpeed > leftTargetSpeed) {
         if (leftCurrentSpeed - 25 >= 0) {
@@ -116,6 +116,28 @@ void Motor::update() {
     if (isStopped()) {
         isAccelerating = false;
         isReversing = false;
+    }*/
+
+	// Appliquer targetSpeed dans currentSpeed
+    this->leftCurrentSpeed = this->leftTargetSpeed;
+    this->rightCurrentSpeed = this->rightTargetSpeed;
+
+    // Contrôle moteur gauche
+    if (this->leftCurrentSpeed >= 0) {
+        this->tim->CCR2 = static_cast<uint16_t>(this->leftCurrentSpeed);  // avant
+        this->tim->CCR1 = 0;
+    } else {
+        this->tim->CCR1 = static_cast<uint16_t>(-this->leftCurrentSpeed); // arrière
+        this->tim->CCR2 = 0;
+    }
+
+    // Contrôle moteur droit
+    if (this->rightCurrentSpeed >= 0) {
+        this->tim->CCR3 = static_cast<uint16_t>(this->rightCurrentSpeed); // avant
+        this->tim->CCR4 = 0;
+    } else {
+        this->tim->CCR4 = static_cast<uint16_t>(-this->rightCurrentSpeed); // arrière
+        this->tim->CCR3 = 0;
     }
 }
 

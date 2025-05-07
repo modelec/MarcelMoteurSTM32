@@ -6,10 +6,10 @@
 class Motor {
 private:
     TIM_TypeDef *tim;
-    uint16_t rightCurrentSpeed;
-    uint16_t leftCurrentSpeed;
-    uint16_t rightTargetSpeed;
-    uint16_t leftTargetSpeed;
+    int16_t rightCurrentSpeed;
+    int16_t leftCurrentSpeed;
+    int16_t rightTargetSpeed;
+    int16_t leftTargetSpeed;
     bool isAccelerating;
     bool isReversing;
     bool isTurningRight;
@@ -19,8 +19,8 @@ public:
     Motor(TIM_TypeDef *timer);
     void setRightTargetSpeed(int pwm);
     void setLeftTargetSpeed(int pwm);
-    float getRightCurrentSpeed();
-    float getLeftCurrentSpeed();
+    int16_t getRightCurrentSpeed();
+    int16_t getLeftCurrentSpeed();
     void accelerer(int speed);
     void reculer(int speed);
     void stop();

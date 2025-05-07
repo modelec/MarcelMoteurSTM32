@@ -48,6 +48,7 @@ bool isDelayPassed(uint32_t delay) {
 void determinationCoefPosition(Point objectifPoint, Point pointActuel){
 	PidPosition pid(0,0,0,0,0,0,objectifPoint);
 
+
 	std::array<double, 2> vitesse = pid.updateNouvelOrdreVitesse(pointActuel);
 	PidVitesse pidG(0, 0, 0, vitesse[0]);
 	PidVitesse pidD(0, 0, 0, vitesse[1]);
@@ -135,6 +136,9 @@ void ModelecOdometryLoop() {
 		Point currentPoint(x, y,theta, StatePoint::INTERMEDIAIRE);
 		Point targetPoint(0.20, 0.20,0, StatePoint::FINAL);
 		determinationCoefPosition(currentPoint,targetPoint);
+
+		sprintf(msg, "X: %.3f m, Y: %.3f m, Theta: %.3f rad\r\n", x, y, theta);
+		HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
 
 		motor.update();
 

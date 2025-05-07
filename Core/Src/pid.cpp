@@ -43,16 +43,29 @@ float Pid::getKd(){
 
 //Methodes
 int Pid::getPWMCommand(float vitesse){
-	/*
-	 * Passer du rpm à m/s : 75/60 = 1.25 (nb tour en 1s). circonférence = pi*diamètre roues. Vitesse en m/s = circonférence * nb tour/s
-	 *
-	 */
-	if(vitesse >= 0.235){		//si on dépasse la vmax qu'on peut atteindre, on bride
-		return 626;
-	} else{
-		float pwm = (626*vitesse) / 0.235;		//produit en croix
-		return std::floor(pwm);
-	}
+	constexpr float VITESSE_MAX = 0.235f;  // m/s
+	constexpr int PWM_MAX = 626;           // commande PWM max
+	constexpr int PWM_MIN = 30;            // zone morte (optionnelle)
+
+	    // Saturation de la vitesse
+    if (vitesse > VITESSE_MAX){
+    	vitesse = VITESSE_MAX;
+    }
+    else if (vitesse < -VITESSE_MAX){
+    	vitesse = -VITESSE_MAX;
+    }
+
+	    // Conversion m/s -> PWM avec conservation du signe
+    float pwm = (PWM_MAX * std::abs(vitesse)) / VITESSE_MAX;
+
+	    // Application d'un seuil minimal pour éviter les très faibles commandes
+    if (pwm < PWM_MIN){
+    	pwm = 0;
+    }
+
+
+	    // Renvoi avec le bon signe
+    return (vitesse >= 0) ? std::floor(pwm) : -std::floor(pwm);
 }
 
 

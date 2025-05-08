@@ -24,6 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,9 +34,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-void ModelecOdometrySetup();
+void ModelecOdometrySetup(void **out_pid, void **out_pidG, void **out_pidD);
 
-void ModelecOdometryLoop();
+void ModelecOdometryLoop(void* pid, void* pidG, void* pidD);
 
 /* USER CODE END PD */
 
@@ -103,15 +104,19 @@ int main(void)
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start(&htim21, TIM_CHANNEL_ALL);
   //HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
-  ModelecOdometrySetup();
+  void *pid;
+  void *pidG;
+  void *pidD;
+  ModelecOdometrySetup(&pid, &pidG, &pidD);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
-	ModelecOdometryLoop();
+	ModelecOdometryLoop(pid, pidG, pidD);
 
   }
     /* USER CODE END WHILE */

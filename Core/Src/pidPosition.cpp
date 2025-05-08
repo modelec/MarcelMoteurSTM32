@@ -137,6 +137,9 @@ std::array<double, 2> PidPosition::updateNouvelOrdreVitesse(Point pointActuel) {
     if (vitesseLineaire > this->Vmax){
     	vitesseLineaire = this->Vmax;
     }
+    if (vitesseLineaire < -this->Vmax){
+       	vitesseLineaire = -this->Vmax;
+    }
     if (vitesseAngulaire > this->Wmax){
     	vitesseAngulaire = this->Wmax;
     }

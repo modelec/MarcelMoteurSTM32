@@ -1,7 +1,11 @@
 
-
 #include "pid.h"
+#include "stm32l0xx_hal.h"      // <--- D'abord
+#include "stm32l0xx_hal_uart.h" // optionnel, déjà dans le précédent
+#include <cstdio>
+#include <cstring>
 
+extern UART_HandleTypeDef huart2;
 
 // Constructeur
 Pid::Pid(float kp, float ki, float kd){
@@ -62,10 +66,15 @@ int Pid::getPWMCommand(float vitesse){
     if (pwm < PWM_MIN){
     	pwm = 0;
     }
+    int32_t pwm_signed = (vitesse >= 0) ? std::floor(pwm) : -std::floor(pwm);
 
+    char msg[64];
+    // Debug UART ici
+    sprintf(msg, "Vitesse: %.3f m/s, PWM: %d\r\n", vitesse, pwm_signed);
+    HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), 10);  // timeout court
 
 	    // Renvoi avec le bon signe
-    return (vitesse >= 0) ? std::floor(pwm) : -std::floor(pwm);
+    return pwm_signed;
 }
 
 

@@ -45,16 +45,20 @@ bool isDelayPassed(uint32_t delay) {
 }
 
 //PID
-void determinationCoefPosition(Point objectifPoint, Point pointActuel){
-	PidPosition pid(0,0,0,0,0,0,objectifPoint);
+void determinationCoefPosition(Point objectifPoint, Point pointActuel, PidPosition pid, PidVitesse pidG, PidVitesse pidD){
+	//PidPosition pid(0,0,0,0,0,0,objectifPoint);
 
 
+	pid.setConsignePositionFinale(objectifPoint);
 	std::array<double, 2> vitesse = pid.updateNouvelOrdreVitesse(pointActuel);
-	PidVitesse pidG(0, 0, 0, vitesse[0]);
-	PidVitesse pidD(0, 0, 0, vitesse[1]);
+	//PidVitesse pidG(0, 0, 0, vitesse[0]);
+	//PidVitesse pidD(0, 0, 0, vitesse[1]);
+	pidG.setConsigneVitesseFinale(vitesse[0]);
+	pidD.setConsigneVitesseFinale(vitesse[1]);
 
 	pidG.updateNouvelleVitesse(motor.getLeftCurrentSpeed());
 	pidD.updateNouvelleVitesse(motor.getRightCurrentSpeed());
+
 
 	float nouvelOrdreG = pidG.getNouvelleConsigneVitesse();
 	float nouvelOrdreD = pidD.getNouvelleConsigneVitesse();
@@ -70,7 +74,7 @@ void determinationCoefPosition(Point objectifPoint, Point pointActuel){
 }
 //Odométrie
 
-void ModelecOdometrySetup() {
+void ModelecOdometrySetup(void **out_pid, void **out_pidG, void **out_pidD) {
 	HAL_UART_Transmit(&huart2, (uint8_t*) "SETUP COMPLETE\n", 15,
 			HAL_MAX_DELAY);
 	lastPosRight = __HAL_TIM_GET_COUNTER(&htim2);
@@ -78,7 +82,14 @@ void ModelecOdometrySetup() {
 	x = 0.0f;
 	y = 0.0f;
 	theta = 0.0f;
-	motor.accelerer(300);
+	//motor.accelerer(300);
+
+    *out_pid = new PidPosition(0,0,0,0,0,0,Point());
+    *out_pidG = new PidVitesse(0, 0, 0, 0);
+    *out_pidD = new PidVitesse(0, 0, 0, 0);
+
+	return;
+
 }
 
 void ModelecOdometryUpdate() {
@@ -126,8 +137,12 @@ void receiveControlParams(){
 
 }
 
-void ModelecOdometryLoop() {
-	receiveControlParams();
+void ModelecOdometryLoop(void* pid, void* pidG, void* pidD) {
+	PidPosition* pidPosition = static_cast<PidPosition*>(pid);
+	PidVitesse* pidVitesseG = static_cast<PidVitesse*>(pidG);
+	PidVitesse* pidVitesseD = static_cast<PidVitesse*>(pidD);
+
+	//receiveControlParams();
 	GPIOC->ODR ^= (1 << 10);
 
 	//On met à jour toutes les 10ms
@@ -135,10 +150,7 @@ void ModelecOdometryLoop() {
 		ModelecOdometryUpdate();
 		Point currentPoint(x, y,theta, StatePoint::INTERMEDIAIRE);
 		Point targetPoint(0.20, 0.20,0, StatePoint::FINAL);
-		determinationCoefPosition(currentPoint,targetPoint);
-
-		sprintf(msg, "X: %.3f m, Y: %.3f m, Theta: %.3f rad\r\n", x, y, theta);
-		HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+		determinationCoefPosition(currentPoint,targetPoint, *pidPosition, *pidVitesseG, *pidVitesseD);
 
 		motor.update();
 
@@ -147,4 +159,4 @@ void ModelecOdometryLoop() {
 	publishStatus();
 }
 
-}
+} //extern C end
